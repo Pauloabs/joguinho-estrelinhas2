@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Caça Estrelinhas</title>
+  <meta charset="UTF-8" />
+  <title>Caça Estrelinhas - Menina Morena</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #222; overflow: hidden; font-family: sans-serif; color: white; }
-    canvas { display: block; margin: 0 auto; background: url('https://i.imgur.com/8aJjovG.jpg') center/cover; border: 3px solid white; }
-    #hud { text-align: center; margin-top: 10px; }
+    body { background: #222; overflow: hidden; font-family: 'Comic Sans MS', cursive, sans-serif; color: white; }
+    canvas { display: block; margin: 0 auto; border: 3px solid white; background: url('https://i.imgur.com/q8uRmIS.jpg') center/cover no-repeat; }
+    #hud { text-align: center; margin-top: 10px; font-size: 18px; }
   </style>
 </head>
 <body>
@@ -21,10 +21,13 @@
     const scoreEl = document.getElementById('score');
     const timerEl = document.getElementById('timer');
 
+    // Imagem da menina morena com cachinhos (6 anos)
     const playerImg = new Image();
-    playerImg.src = 'https://i.imgur.com/ILnP8gL.png'; // Menininha
+    playerImg.src = 'https://i.imgur.com/LMxI7i3.png'; // Menina pequena, morena, cachos (PNG com fundo transparente)
+
     const starImg = new Image();
     starImg.src = 'https://i.imgur.com/5LzGZ1V.png'; // Estrela
+
     const monsterImg = new Image();
     monsterImg.src = 'https://i.imgur.com/IaUrttj.png'; // Monstro
 
@@ -121,7 +124,7 @@
         requestAnimationFrame(loop);
       } else {
         ctx.fillStyle = 'white';
-        ctx.font = '48px sans-serif';
+        ctx.font = '48px Comic Sans MS, cursive, sans-serif';
         ctx.fillText('Game Over!', 300, 300);
       }
     }
