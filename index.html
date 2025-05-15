@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Caça Estrelinhas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #222; overflow: hidden; font-family: sans-serif; color: white; }
+    canvas { display: block; margin: 0 auto; background: url('https://i.imgur.com/8aJjovG.jpg') center/cover; border: 3px solid white; }
+    #hud { text-align: center; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <div id="hud">
+    <p>⭐ Estrelas: <span id="score">0</span> | ⏱️ Tempo: <span id="timer">0</span>s</p>
+  </div>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const timerEl = document.getElementById('timer');
+
+    const playerImg = new Image();
+    playerImg.src = 'https://i.imgur.com/ILnP8gL.png'; // Menininha
+    const starImg = new Image();
+    starImg.src = 'https://i.imgur.com/5LzGZ1V.png'; // Estrela
+    const monsterImg = new Image();
+    monsterImg.src = 'https://i.imgur.com/IaUrttj.png'; // Monstro
+
+    const player = { x: 100, y: 100, size: 40, speed: 3 };
+    const stars = [];
+    const monsters = [];
+    const keys = {};
+    let score = 0;
+    let time = 0;
+    let gameOver = false;
+
+    function drawPlayer() {
+      ctx.drawImage(playerImg, player.x - 20, player.y - 20, 40, 40);
+    }
+
+    function drawStar(star) {
+      ctx.drawImage(starImg, star.x - 10, star.y - 10, 20, 20);
+    }
+
+    function drawMonster(monster) {
+      ctx.drawImage(monsterImg, monster.x - 25, monster.y - 25, 50, 50);
+    }
+
+    function spawnStar() {
+      stars.push({
+        x: Math.random() * (canvas.width - 20) + 10,
+        y: Math.random() * (canvas.height - 20) + 10
+      });
+    }
+
+    function spawnMonster() {
+      monsters.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        speed: 1 + Math.random()
+      });
+    }
+
+    function updatePlayer() {
+      if (keys['ArrowUp']) player.y -= player.speed;
+      if (keys['ArrowDown']) player.y += player.speed;
+      if (keys['ArrowLeft']) player.x -= player.speed;
+      if (keys['ArrowRight']) player.x += player.speed;
+
+      player.x = Math.max(0, Math.min(canvas.width, player.x));
+      player.y = Math.max(0, Math.min(canvas.height, player.y));
+    }
+
+    function updateMonsters() {
+      monsters.forEach(monster => {
+        const dx = player.x - monster.x;
+        const dy = player.y - monster.y;
+        const dist = Math.hypot(dx, dy);
+        monster.x += (dx / dist) * monster.speed;
+        monster.y += (dy / dist) * monster.speed;
+
+        if (dist < player.size / 2 + 25) {
+          gameOver = true;
+        }
+      });
+    }
+
+    function collectStars() {
+      for (let i = stars.length - 1; i >= 0; i--) {
+        const s = stars[i];
+        const dist = Math.hypot(player.x - s.x, player.y - s.y);
+        if (dist < player.size / 2 + 10) {
+          stars.splice(i, 1);
+          score++;
+          scoreEl.textContent = score;
+        }
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawPlayer();
+      stars.forEach(drawStar);
+      monsters.forEach(drawMonster);
+    }
+
+    function update() {
+      if (gameOver) return;
+      updatePlayer();
+      updateMonsters();
+      collectStars();
+    }
+
+    function loop() {
+      update();
+      draw();
+      if (!gameOver) {
+        requestAnimationFrame(loop);
+      } else {
+        ctx.fillStyle = 'white';
+        ctx.font = '48px sans-serif';
+        ctx.fillText('Game Over!', 300, 300);
+      }
+    }
+
+    setInterval(() => {
+      if (!gameOver) {
+        time++;
+        timerEl.textContent = time;
+        if (stars.length < 5) spawnStar();
+        if (monsters.length < 3) spawnMonster();
+      }
+    }, 1000);
+
+    window.addEventListener('keydown', e => keys[e.key] = true);
+    window.addEventListener('keyup', e => keys[e.key] = false);
+
+    loop();
+  </script>
+</body>
+</html>
